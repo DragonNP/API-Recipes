@@ -15,7 +15,7 @@ app.use('/users', user_router);
 
 app.use(errors);
 
-app.listen(4000, function () {
+app.listen(process.env.PORT || 4000, function () {
    console.log('api is working on localhost:4000')
 });
 
