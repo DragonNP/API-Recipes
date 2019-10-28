@@ -2,7 +2,8 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
 // создаем объект MongoClient и передаем ему строку подключения
-const mongoClient = new MongoClient("mongodb://localhost:27017/", { useNewUrlParser: true, useUnifiedTopology: true });
+const uri = "mongodb+srv://Recipes-API-User:58pP2X0Lm8RjWxrR@cluster0-sooyn.gcp.mongodb.net/test?retryWrites=true&w=majority";
+const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 let dbClient;
 let collectionUser;
 
