@@ -3,18 +3,11 @@ const config = require('config.json');
 const jwt = require('jsonwebtoken');
 const db = require('db');
 
-// users hardcoded for simplicity, store in a db for production applications
-const users = [
-    { id: '1', username: 'admin', password: 'admin', email: 'admin@email.ru', firstName: 'Admin', lastName: 'User', role: Role.Admin,
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGFzc3dvcmQiOiJhZG1pbiIsImlhdCI6MTU3MjE5Njg1NX0.zq7r0POc9xT4fr8Ui7JOfOuDlps7H5MlVQxIZ7qK7io'},
-    { id: '2', username: 'user', password: 'user', email: 'user@email.ru', firstName: 'Normal', lastName: 'User', role: Role.User,
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJwYXNzd29yZCI6InVzZXIiLCJpYXQiOjE1NzIxOTY4NTV9.mleCXRydrbPKkhuX4xICkuRCnRHcz6QONFp-UluA2Io'}
-];
-
 module.exports = {
     authenticate,
     registration,
     getAllOrById,
+    updateMeOrRoleById,
     myProfile
 };
 
@@ -87,11 +80,36 @@ function registration(request, response, next) {
     });
 }
 
+function myProfile(request, response, next) {
+    const body = request.body;
+    const token = body.token;
+    const params = {
+        token: token
+    };
+
+    if (!token)
+        return next('invalid json');
+
+    db.getUser(params, (err, doc) => {
+        if (err) return next(err);
+        if (!doc) return next('not found');
+
+        response.json(doc);
+    });
+}
+
 function getAllOrById(request, response, next) {
     if (request.body.id === undefined)
         return getAll(request, response, next);
 
     getById(request, response, next)
+}
+
+function updateMeOrRoleById(request, response, next) {
+    if (request.body.id === undefined)
+        return updateMe(request, response, next);
+
+    updateRoleById(request, response, next)
 }
 
 function getAll(request, response, next) {
@@ -132,7 +150,6 @@ function getById(request, response, next) {
             return next('invalid token');
 
         if(doc.role === Role.Admin) {
-
             db.getUserById(id, (err, doc) => {
                 if (err) return next(err);
 
@@ -144,20 +161,52 @@ function getById(request, response, next) {
     });
 }
 
-function myProfile(request, response, next) {
+function updateMe(request, response, next) {
     const body = request.body;
-    const token = body.token;
+    
     const params = {
-        token: token
+        token: body.token
+    };
+    const update_values = {
+        password: body.password,
+        firstName: body.firstName,
+        lastName: body.lastName
     };
 
-    if (!token)
-        return next('invalid json');
+    db.updateUser(params, update_values, (err, result) => {
+        if(err) return next(err);
+        response.json({
+            ok: result.ok
+        });
+    })
+}
+
+function updateRoleById(request, response, next) {
+    const body = request.body;
+
+    if(body.role !== Role.Admin &&
+        body.role !== Role.User)
+        return next('role is invalid');
+
+    const params = {
+        token: body.token
+    };
 
     db.getUser(params, (err, doc) => {
-        if (err) return next(err);
-        if (!doc) return next('not found');
+        if(err)
+            return next(err);
 
-        response.json(doc);
+        if(!doc)
+            return next('invalid token');
+
+        if(doc.role === Role.Admin) {
+
+            db.updateUserById(body.id, {role: body.role}, (err, result) => {
+                if(err) return next(err);
+                response.json({ok: result.ok});
+            })
+        }
+        else
+            return next('forbidden');
     });
 }

@@ -1,7 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
-// создаем объект MongoClient и передаем ему строку подключения
 const uri = "mongodb+srv://Recipes-API-User:58pP2X0Lm8RjWxrR@cluster0-sooyn.gcp.mongodb.net/test?retryWrites=true&w=majority";
 const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 let dbClient;
@@ -13,7 +12,9 @@ module.exports = {
     addUser,
     getUser,
     getUsers,
-    getUserById
+    getUserById,
+    updateUser,
+    updateUserById
 };
 
 function init() {
@@ -45,7 +46,9 @@ function getUser(params, fn) {
 }
 
 function getUserById(id, fn) {
-    collectionUser.findOne(ObjectID(id), function(err, doc) {
+    collectionUser.findOne(
+        ObjectID(id),
+        function(err, doc) {
         fn(err, doc);
     });
 }
@@ -54,4 +57,20 @@ function getUsers(params, fn) {
     collectionUser.find(params).toArray(function (err, results) {
         fn(err, results);
     });
+}
+
+function updateUser(params, update_values,fn) {
+    collectionUser.findOneAndUpdate(
+        params,
+        { $set: update_values},
+        fn
+    );
+}
+
+function updateUserById(id, update_values,fn) {
+    collectionUser.findOneAndUpdate(
+        {_id: ObjectID(id)},
+        { $set: update_values},
+        fn
+    );
 }
