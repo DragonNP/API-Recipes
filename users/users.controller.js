@@ -1,7 +1,6 @@
 const Role = require('./_helpers/role');
 const config = require('config.json');
 const jwt = require('jsonwebtoken');
-const lodash = require('lodash');
 const db = require('db');
 
 // users hardcoded for simplicity, store in a db for production applications

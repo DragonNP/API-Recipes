@@ -1,19 +1,28 @@
 {
-  "name": "api",
+  "name": "recipe-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is the API for the project: \"Recipes\"",
   "main": "index.js",
   "scripts": {
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "DragonNP",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.3.3",
     "rootpath": "^0.1.2"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DragonNP/Recipes-API.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DragonNP/Recipes-API/issues"
+  },
+  "homepage": "https://github.com/DragonNP/Recipes-API#readme"
 }
