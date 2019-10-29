@@ -23,12 +23,16 @@ module.exports = {
     getUserById,
     updateUser,
     updateUserById,
-    deleteUser
+    deleteUser,
 
     // Recipes
-
+    addRecipe,
+    getRecipe,
+    getRecipeById,
+    getRecipes
 };
 
+// Connect and close db
 function connect() {
     log.info('connecting to db...');
 
@@ -58,11 +62,11 @@ function close() {
     log.err('db is not connecting')
 }
 
-
+// Users
 function addUser(user, fn) {
     log.info('called method addUser');
     collectionUsers.insertOne(user, function (err, result) {
-        log.debug(`err:${err} result:${result}`);
+        log.debug(`err:${err} ok:${result.result.ok}`);
         fn(err, result.ops[0]);
     });
 }
@@ -106,4 +110,31 @@ function updateUserById(id, update_values, fn) {
 function deleteUser(params, fn) {
     log.info('called method deleteUser');
     collectionUsers.deleteOne(params, fn)
+}
+
+// Recipes
+function addRecipe(recipe, fn) {
+    log.info('called method addRecipe');
+    collectionRecipes.insertOne(recipe, (err, result) => {
+        log.debug(`err:${err} ok:${result.result.ok}`);
+        fn(err, result.ops[0]);
+    });
+}
+
+function getRecipe(params, fn) {
+    log.info('called method getRecipe');
+    collectionRecipes.findOne(params, fn);
+}
+
+function getRecipeById(id, fn) {
+    log.info('called method getRecipeById');
+    collectionRecipes.findOne(
+        ObjectID(id),
+        fn
+    );
+}
+
+function getRecipes(params, fn) {
+    log.info('called method getRecipes');
+    collectionRecipes.find(params).toArray(fn);
 }

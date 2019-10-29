@@ -1,12 +1,12 @@
 const express = require('express');
-const userController = require('./users.controller');
+const usersController = require('./users.controller');
 
 const router = express.Router();
 // routes
-router.post('/authenticate', userController.authenticate);
-router.post('/registration', userController.registration);
-router.post('/update', userController.updateMeOrRoleById);
-router.get('/myProfile', userController.myProfile);
-router.get('/', userController.getAllOrById);
+router.post('/authenticate', usersController.authenticate);
+router.post('/registration', usersController.registration);
+router.post('/update', usersController.updateMeOrRoleById);
+router.get('/myProfile', usersController.myProfile);
+router.get('/', usersController.getAllOrById);
 
 module.exports = router;

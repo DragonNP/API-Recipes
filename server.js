@@ -1,7 +1,8 @@
 require('rootpath')();
 const express = require('express');
 const bodyParser = require('body-parser');
-const user_router = require('users/users.router');
+const users_router = require('users/users.router');
+const recipes_router = require('recipes/recipes.router');
 const errors = require('_helpers/errors');
 const db = require('db');
 
@@ -11,7 +12,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use('/users', user_router);
+app.use('/users', users_router);
+app.use('/recipes', recipes_router);
 app.use(errors);
 
 app.listen(process.env.PORT || 4000, function () {
