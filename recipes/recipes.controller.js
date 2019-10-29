@@ -1,15 +1,16 @@
 const db = require('db');
 const dateFormat = require('dateformat');
+const ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
-    addRecipe,
-    getAllOrById,
+    add,
+    addFavourites,
+    getAllOrById
 };
 
-function addRecipe(request, response, next) {
+function add(request, response, next) {
     const body = request.body;
     const date = dateFormat(new Date(), "yyyy-mm-dd h:MM");
-
     const params = {
         token: body.token
     };
@@ -24,34 +25,80 @@ function addRecipe(request, response, next) {
         if(err) return next(err);
         if(!result._id) return  next('invalid token');
 
+        const account_id = result._id;
+        const recipes = result.recipes;
         const recipe = {
+            path_img: '',
             name: body.name,
+            description: '',
             ingredients: body.ingredients,
             instruction: body.instruction,
             date: date,
-            account_id: result._id,
+            account_id: account_id,
         };
 
-        if (body.path_img)
-            recipe.path_img = body.path_img;
-
-        if (body.description)
-            recipe.description = body.description;
+        if (body.description) recipe.description = body.description;
+        if (body.path_img) recipe.path_img = body.path_img;
 
         db.addRecipe(recipe, (err, result) => {
             if (err) return next(err);
 
+            recipes.push(ObjectID(result._id));
+            const update_values = {
+                recipes: recipes
+            };
+
+            db.updateUserById(account_id, update_values, (err, result) => {
+                if (err) return next(err);
+            });
             response.json({ id: result._id});
         });
     });
 }
 
+function addFavourites(request, response, next) {
+    const body = request.body;
+    const token = body.token;
+    const recipe_id = body.id;
+    const params = {
+        token: token
+    };
+
+    if (!token ||
+        !recipe_id)
+        return next('invalid json');
+
+    db.getUser(params, (err, result) => {
+        if(err) return next(err);
+
+        const favourites = result.favourites;
+        if (favourites.find(r => String(r) === recipe_id))
+            return next('this is recipe is favourites');
+
+        favourites.push(ObjectID(recipe_id));
+        const update_values = {
+          favourites: favourites
+        };
+
+        db.updateUser(params, update_values, (err, result) => {
+            if(err) return next(err);
+            response.json({ok: result.ok});
+        })
+    });
+}
+
 function getAllOrById(request, response, next) {
-    if (request.body.id === undefined)
+    if (request.body.id)
+        return getById(request, response, next);
+    if (request.body.account_id)
+        return getByAccountID(request, response, next);
+    if (!request.body.id &&
+        !request.body.account_id)
         return getAll(request, response, next);
 
-    getById(request, response, next)
+    return next('invalid json');
 }
+
 
 function getAll(request, response, next) {
     db.getRecipes({}, (err, result) => {
@@ -66,6 +113,20 @@ function getById(request, response, next) {
     db.getRecipeById(body.id, (err, result) => {
         if(err) return next(err);
         if(!result) return next('invalid id');
+
+        response.json(result);
+    });
+}
+
+function getByAccountID(request, response, next) {
+    const body = request.body;
+    const params = {
+        account_id: ObjectID(body.account_id)
+    };
+
+    db.getRecipes(params, (err, result) => {
+        if(err) return next(err);
+        if(!result) return next('invalid account id');
 
         response.json(result);
     });

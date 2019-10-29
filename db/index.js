@@ -9,7 +9,7 @@ let dbClient;
 let collectionUsers;
 let collectionRecipes;
 
-log.setLevel('debug');
+log.setLevel('info');
 
 module.exports = {
     // Connect and close db
@@ -27,9 +27,10 @@ module.exports = {
 
     // Recipes
     addRecipe,
-    getRecipe,
     getRecipeById,
-    getRecipes
+    getRecipes,
+    updateRecipe,
+    deleteRecipe
 };
 
 // Connect and close db
@@ -121,11 +122,6 @@ function addRecipe(recipe, fn) {
     });
 }
 
-function getRecipe(params, fn) {
-    log.info('called method getRecipe');
-    collectionRecipes.findOne(params, fn);
-}
-
 function getRecipeById(id, fn) {
     log.info('called method getRecipeById');
     collectionRecipes.findOne(
@@ -137,4 +133,18 @@ function getRecipeById(id, fn) {
 function getRecipes(params, fn) {
     log.info('called method getRecipes');
     collectionRecipes.find(params).toArray(fn);
+}
+
+function updateRecipe(params, update_values, fn) {
+    log.info('called method updateUser');
+    collectionRecipes.findOneAndUpdate(
+        params,
+        {$set: update_values},
+        fn
+    )
+}
+
+function deleteRecipe(params, fn) {
+    log.info('called method deleteRecipe');
+    collectionRecipes.deleteOne(params, fn)
 }

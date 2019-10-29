@@ -7,8 +7,11 @@ module.exports = {
     authenticate,
     registration,
     myProfile,
+    myFavourites,
+    update,
     getAllOrById,
-    updateMeOrRoleById
+
+
 };
 
 function authenticate(request, response, next) {
@@ -23,10 +26,8 @@ function authenticate(request, response, next) {
         return next('invalid json');
 
     db.getUser(params, (err, doc) => {
-        if (err)
-            return next(err);
-        if (!doc)
-            return next('email or password invalid');
+        if (err) return next(err);
+        if (!doc) return next('email or password invalid');
 
         response.json({ token: doc.token });
     });
@@ -34,10 +35,12 @@ function authenticate(request, response, next) {
 
 function registration(request, response, next) {
     const body = request.body;
-    const token = jwt.sign({
+    const token = jwt.sign(
+        {
             username: body.username,
             password: body.password
-        }, config.secret);
+        },
+        config.secret);
 
     const params1 = {
         username: body.username
@@ -47,18 +50,20 @@ function registration(request, response, next) {
     };
     const user = {
         username: body.username,
+        firstName: '',
+        lastName: '',
         password: body.password,
         email: body.email,
         role: Role.User,
+        favourites: [],
+        recipes: [],
         token: token
     };
 
     if(body.firstName)
         user.firstName = body.firstName;
-
     if(body.lastName)
         user.lastName = body.lastName;
-
     if(!body.username ||
         !body.password ||
         !body.email)
@@ -88,8 +93,7 @@ function myProfile(request, response, next) {
         token: token
     };
 
-    if (!token)
-        return next('invalid json');
+    if (!token) return next('invalid json');
 
     db.getUser(params, (err, doc) => {
         if (err) return next(err);
@@ -99,24 +103,69 @@ function myProfile(request, response, next) {
     });
 }
 
+function myFavourites(request, response, next) {
+    const body = request.body;
+    const params = {
+        token: body.token
+    };
 
-function getAllOrById(request, response, next) {
-    if (request.body.id === undefined)
-        return getAll(request, response, next);
+    if(!body.token) return next('invalid json');
 
-    getById(request, response, next)
+    db.getUser(params, (err, result) => {
+       if(err) return next(err);
+
+       response.json({ favourites: result.favourites });
+    });
 }
 
-function updateMeOrRoleById(request, response, next) {
-    if (request.body.id === undefined)
-        return updateMe(request, response, next);
+function update(request, response, next) {
+    const body = request.body;
+    const params = {
+        token: body.token
+    };
+    const update_values = {};
 
-    updateRoleById(request, response, next)
+    if(body.role) return next('forbidden');
+    if(body.password) update_values.password = body.password;
+    if(body.firstName) update_values.firstName = body.firstName;
+    if(body.lastName) update_values.lastName = body.lastName;
+    if(body.favourites) update_values.favourites = body.favourites;
+
+    db.updateUser(params, update_values, (err, result) => {
+        if(err) return next(err);
+        response.json({ ok: result.ok });
+    })
+}
+
+
+function getAllOrById(request, response, next) {
+    if(request.body.id)
+        return getById(request, response, next);
+    return getAll(request, response, next);
 }
 
 
 function getAll(request, response, next) {
     const token = request.body.token;
+    const params = {
+        token: token
+    };
+
+    db.getUser(params, (err, doc) => {
+        if(err) return next(err);
+        if(!doc) return next('invalid token');
+        if(doc.role !== Role.Admin) return next('forbidden');
+
+        db.getUsers({}, (err, results) => {
+            if (err) return next(err);
+            response.json(results);
+        });
+    });
+}
+
+function getById(request, response, next) {
+    const token = request.body.token;
+    const id = request.body.id;
     const params = {
         'token': token
     };
@@ -124,92 +173,11 @@ function getAll(request, response, next) {
     db.getUser(params, (err, doc) => {
         if(err) return next(err);
         if(!doc) return next('invalid token');
+        if(doc.role !== Role.Admin) return next('forbidden');
 
-        if(doc.role === Role.Admin) {
-            db.getUsers({}, (err, results) => {
-                if(err) return next(err);
-
-                return response.json(results);
-            });
-        }
-        else
-            return next('forbidden');
-    });
-}
-
-function getById(request, response, next) {
-    const token = request.body.token;
-    const id = request.body.id;
-
-    const params = {
-        'token': token
-    };
-
-    db.getUser(params, (err, doc) => {
-        if(err)
-            return next(err);
-
-        if(!doc)
-            return next('invalid token');
-
-        if(doc.role === Role.Admin) {
-            db.getUserById(id, (err, doc) => {
+        db.getUserById(id, (err, doc) => {
                 if (err) return next(err);
-
                 return response.json(doc);
-            });
-        }
-        else
-            return next('forbidden');
-    });
-}
-
-function updateMe(request, response, next) {
-    const body = request.body;
-    
-    const params = {
-        token: body.token
-    };
-    const update_values = {
-        password: body.password,
-        firstName: body.firstName,
-        lastName: body.lastName
-    };
-
-    db.updateUser(params, update_values, (err, result) => {
-        if(err) return next(err);
-        response.json({
-            ok: result.ok
         });
-    })
-}
-
-function updateRoleById(request, response, next) {
-    const body = request.body;
-
-    if(body.role !== Role.Admin &&
-        body.role !== Role.User)
-        return next('role is invalid');
-
-    const params = {
-        token: body.token
-    };
-
-    db.getUser(params, (err, doc) => {
-        if(err)
-            return next(err);
-
-        if(!doc)
-            return next('invalid token');
-
-        if(doc.role === Role.Admin) {
-
-            db.updateUserById(body.id, {role: body.role}, (err, result) => {
-                if(err) return next(err);
-                response.json({ok: result.ok});
-            })
-        }
-        else
-            return next('forbidden');
     });
 }
