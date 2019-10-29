@@ -5,14 +5,13 @@ const user_router = require('users/users.router');
 const errors = require('_helpers/errors');
 const db = require('db');
 
-db.init();
+db.connect();
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/users', user_router);
-
 app.use(errors);
 
 app.listen(process.env.PORT || 4000, function () {

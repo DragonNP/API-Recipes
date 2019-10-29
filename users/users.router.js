@@ -1,8 +1,7 @@
 const express = require('express');
-const router = express.Router();
 const userController = require('./users.controller');
-const role = require('./_helpers/role');
 
+const router = express.Router();
 // routes
 router.post('/authenticate', userController.authenticate);
 router.post('/registration', userController.registration);

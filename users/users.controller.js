@@ -6,28 +6,27 @@ const db = require('db');
 module.exports = {
     authenticate,
     registration,
+    myProfile,
     getAllOrById,
-    updateMeOrRoleById,
-    myProfile
+    updateMeOrRoleById
 };
 
 function authenticate(request, response, next) {
     const body = request.body;
-
-    if (!body.email ||
-        !body.password)
-        return next('invalid json');
-
     const params = {
         email: body.email,
         password: body.password
     };
 
+    if (!body.email ||
+        !body.password)
+        return next('invalid json');
+
     db.getUser(params, (err, doc) => {
         if (err)
             return next(err);
         if (!doc)
-            return next('not found');
+            return next('email or password invalid');
 
         response.json({ token: doc.token });
     });
@@ -50,17 +49,19 @@ function registration(request, response, next) {
         username: body.username,
         password: body.password,
         email: body.email,
-        firstName: body.firstName,
-        lastName: body.lastName,
         role: Role.User,
         token: token
     };
 
+    if(body.firstName)
+        user.firstName = body.firstName;
+
+    if(body.lastName)
+        user.lastName = body.lastName;
+
     if(!body.username ||
         !body.password ||
-        !body.email ||
-        !body.firstName ||
-        !body.lastName)
+        !body.email)
         return next('invalid json');
 
     db.getUser(params1, (err, result) => {
@@ -74,7 +75,7 @@ function registration(request, response, next) {
             db.addUser(user, (err, result) => {
                 if(err) return next(err);
 
-                response.json({ token: token });
+                response.json({ token: result.token });
             });
         });
     });
@@ -98,6 +99,7 @@ function myProfile(request, response, next) {
     });
 }
 
+
 function getAllOrById(request, response, next) {
     if (request.body.id === undefined)
         return getAll(request, response, next);
@@ -111,6 +113,7 @@ function updateMeOrRoleById(request, response, next) {
 
     updateRoleById(request, response, next)
 }
+
 
 function getAll(request, response, next) {
     const token = request.body.token;
