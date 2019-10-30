@@ -10,4 +10,7 @@ router.post('/addFavourites', recipesController.addFavourites);
 // get requests
 router.get('/', recipesController.getAllOrById);
 
+// delete request
+router.delete('/', recipesController.deleteByID);
+
 module.exports = router;

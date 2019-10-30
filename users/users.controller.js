@@ -110,7 +110,7 @@ function myFavourites(request, response, next) {
 
     db.getUser(params, (err, result) => {
        if(err) return next(err);
-
+       if(!result) return next('invalid token');
        response.json({ favourites: result.favourites });
     });
 }

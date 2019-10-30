@@ -4,6 +4,7 @@ const ObjectID = require('mongodb').ObjectID;
 
 module.exports = {
     add,
+    deleteByID,
     addFavourites,
     getAllOrById
 };
@@ -54,6 +55,43 @@ function add(request, response, next) {
             response.json({ id: result._id});
         });
     });
+}
+
+function deleteByID(request, response, next) {
+    const body = request.body;
+    const token = body.token;
+    const id = body.id;
+    const params = {
+        token: token
+    };
+    const params2 = {
+        _id: ObjectID(id)
+    };
+
+    if(!token ||
+        !id)
+        return next('invalid json');
+
+    db.getUser(params, (err, result) => {
+        if(err) return next(err);
+
+        const recipes = result.recipes;
+        if(!recipes.find(_id => String(_id) === id))
+            return next('forbidden');
+
+        recipes.splice(recipes.indexOf(ObjectID(id)), 1);
+        const update_values = {
+          recipes: recipes
+        };
+
+        db.updateUser(params, update_values, (err, result) => {
+            if(err) return next(err)
+        });
+        db.deleteRecipe(params2, (err, result) => {
+           if(err) return next(err);
+           response.json({ ok: result.result.ok});
+        });
+    })
 }
 
 function addFavourites(request, response, next) {
