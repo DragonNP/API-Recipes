@@ -10,8 +10,6 @@ module.exports = {
     myFavourites,
     update,
     getAllOrById,
-
-
 };
 
 function authenticate(request, response, next) {
@@ -77,9 +75,7 @@ function registration(request, response, next) {
             if(err) return next(err);
             if (result) return next('Email is exits');
 
-            db.addUser(user, (err, result) => {
-                if(err) return next(err);
-
+            db.addUser(user, result => {
                 response.json({ token: result.token });
             });
         });

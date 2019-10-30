@@ -1,3 +1,5 @@
+const colors = require('colors');
+
 let isDebug,
     isInfo,
     isWarn,
@@ -46,31 +48,23 @@ function setLevel(level) {
 function debug(msg) {
     if (!isDebug) return;
 
-    console.log('--------DEBUG-------');
-    console.log(msg);
-    console.log('---------END--------');
+    console.log('DEBUG:'.green, msg);
 }
 
 function info(msg) {
     if (!isInfo) return '';
 
-    console.log('--------INFO--------');
-    console.log(msg);
-    console.log('---------END--------');
+    console.log('INFO:'.white, msg);
 }
 
 function warn(msg) {
     if (!isWarn) return;
 
-    console.log('--------WARN--------');
-    console.log(msg);
-    console.log('---------END--------');
+    console.log('WARN:'.yellow, msg);
 }
 
 function err(msg) {
     if (!isErr) return;
 
-    console.log('---------ERR--------');
-    console.log(new Error(msg));
-    console.log('---------END--------');
+    console.log('ERR:'.red, new Error(msg).message);
 }

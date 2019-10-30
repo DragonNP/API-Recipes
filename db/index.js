@@ -1,6 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require('mongodb').ObjectID;
-const log = require('./logger');
+const log = require('_helpers/logger');
 
 const uri = "mongodb+srv://Recipes-API-User:58pP2X0Lm8RjWxrR@cluster0-sooyn.gcp.mongodb.net/test?retryWrites=true&w=majority";
 const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -8,8 +8,6 @@ const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopo
 let dbClient;
 let collectionUsers;
 let collectionRecipes;
-
-log.setLevel('info');
 
 module.exports = {
     // Connect and close db
@@ -34,25 +32,26 @@ module.exports = {
 };
 
 // Connect and close db
-function connect() {
+function connect(fn) {
     log.info('connecting to db...');
 
-    mongoClient.connect(function (err, client) {
-        if (err) return log.err(err);
+    mongoClient.connect()
+        .then(client => {
+            const database = client.db('apidb');
+            const dbCollectionUsers = database.collection('users');
+            const dbCollectionRecipes = database.collection('recipes');
 
-        const database = client.db('apidb');
-        const dbCollectionUsers = database.collection('users');
-        const dbCollectionRecipes = database.collection('recipes');
+            dbClient = client;
+            collectionUsers = dbCollectionUsers;
+            collectionRecipes = dbCollectionRecipes;
 
-        dbClient = client;
-        collectionUsers = dbCollectionUsers;
-        collectionRecipes = dbCollectionRecipes;
+            log.debug('dbClient initialized');
+            log.debug('collectionUsers initialized');
+            log.debug('collectionRecipes initialized');
+            log.info('connecting is successful');
 
-        log.debug('dbClient initialized');
-        log.debug('collectionUsers initialized');
-        log.debug('collectionRecipes initialized');
-        log.info('connecting is successful');
-    })
+            fn()
+        }).catch(err => log.err(err));
 }
 
 function close() {
@@ -66,10 +65,9 @@ function close() {
 // Users
 function addUser(user, fn) {
     log.info('called method addUser');
-    collectionUsers.insertOne(user, function (err, result) {
-        log.debug(`err:${err} ok:${result.result.ok}`);
-        fn(err, result.ops[0]);
-    });
+    collectionUsers.insertOne(user)
+        .then(result => fn(result.ops[0]))
+        .catch(err => log.err(err));
 }
 
 function getUser(params, fn) {
