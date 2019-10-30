@@ -75,7 +75,8 @@ function registration(request, response, next) {
             if(err) return next(err);
             if (result) return next('Email is exits');
 
-            db.addUser(user, result => {
+            db.addUser(user, (err, result) => {
+                if(err) return next(err);
                 response.json({ token: result.token });
             });
         });
@@ -135,8 +136,7 @@ function update(request, response, next) {
 
 
 function getAllOrById(request, response, next) {
-    if(request.body.id)
-        return getById(request, response, next);
+    if(request.body.id) return getById(request, response, next);
     return getAll(request, response, next);
 }
 
@@ -172,8 +172,8 @@ function getById(request, response, next) {
         if(doc.role !== Role.Admin) return next('forbidden');
 
         db.getUserById(id, (err, doc) => {
-                if (err) return next(err);
-                return response.json(doc);
+            if (err) return next(err);
+            return response.json(doc);
         });
     });
 }

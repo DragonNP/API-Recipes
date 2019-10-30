@@ -65,9 +65,8 @@ function close() {
 // Users
 function addUser(user, fn) {
     log.info('called method addUser');
-    collectionUsers.insertOne(user)
-        .then(result => fn(result.ops[0]))
-        .catch(err => log.err(err));
+
+    collectionUsers.insertOne(user, fn);
 }
 
 function getUser(params, fn) {
