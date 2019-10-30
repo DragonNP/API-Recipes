@@ -10,6 +10,6 @@ router.post('/update', usersController.update);
 
 // get requests
 router.get('/myProfile', usersController.myProfile);
-router.get('/', usersController.getById());
+router.get('/', usersController.getById);
 
 module.exports = router;
