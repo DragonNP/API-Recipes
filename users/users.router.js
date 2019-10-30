@@ -9,8 +9,7 @@ router.post('/registration', usersController.registration);
 router.post('/update', usersController.update);
 
 // get requests
-router.get('/myFavourites', usersController.myFavourites);
 router.get('/myProfile', usersController.myProfile);
-router.get('/', usersController.getAllOrById);
+router.get('/', usersController.getById());
 
 module.exports = router;

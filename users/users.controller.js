@@ -7,9 +7,8 @@ module.exports = {
     authenticate,
     registration,
     myProfile,
-    myFavourites,
     update,
-    getAllOrById,
+    getById,
 };
 
 function authenticate(request, response, next) {
@@ -100,21 +99,6 @@ function myProfile(request, response, next) {
     });
 }
 
-function myFavourites(request, response, next) {
-    const body = request.body;
-    const params = {
-        token: body.token
-    };
-
-    if(!body.token) return next('invalid json');
-
-    db.getUser(params, (err, result) => {
-       if(err) return next(err);
-       if(!result) return next('invalid token');
-       response.json({ favourites: result.favourites });
-    });
-}
-
 function update(request, response, next) {
     const body = request.body;
     const params = {
@@ -134,46 +118,21 @@ function update(request, response, next) {
     })
 }
 
-
-function getAllOrById(request, response, next) {
-    if(request.body.id) return getById(request, response, next);
-    return getAll(request, response, next);
-}
-
-
-function getAll(request, response, next) {
-    const token = request.body.token;
-    const params = {
-        token: token
-    };
-
-    db.getUser(params, (err, doc) => {
-        if(err) return next(err);
-        if(!doc) return next('invalid token');
-        if(doc.role !== Role.Admin) return next('forbidden');
-
-        db.getUsers({}, (err, results) => {
-            if (err) return next(err);
-            response.json(results);
-        });
-    });
-}
-
 function getById(request, response, next) {
-    const token = request.body.token;
     const id = request.body.id;
-    const params = {
-        'token': token
-    };
 
-    db.getUser(params, (err, doc) => {
-        if(err) return next(err);
-        if(!doc) return next('invalid token');
-        if(doc.role !== Role.Admin) return next('forbidden');
+    if(!id) return next('invalid json');
 
-        db.getUserById(id, (err, doc) => {
-            if (err) return next(err);
-            return response.json(doc);
-        });
+    db.getUserById(id, (err, doc) => {
+        if (err) return next(err);
+
+        const user = doc;
+        delete user.password;
+        delete user.email;
+        delete user.role;
+        delete user.favourites;
+        delete user.token;
+
+        return response.json(user);
     });
 }
