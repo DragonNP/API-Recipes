@@ -68,11 +68,11 @@ function registration(request, response, next) {
 
     db.getUser(params1, (err, result) => {
         if(err) return next(err);
-        if (result) return next('Username is exits');
+        if (result) return next('username is exist');
 
         db.getUser(params2, (err, result) => {
             if(err) return next(err);
-            if (result) return next('Email is exits');
+            if (result) return next('email is exist');
 
             db.addUser(user, (err, result) => {
                 if(err) return next(err);
@@ -95,7 +95,10 @@ function myProfile(request, response, next) {
         if (err) return next(err);
         if (!doc) return next('not found');
 
-        response.json(doc);
+        const user = doc;
+        delete user.token;
+
+        response.json(user);
     });
 }
 
@@ -106,7 +109,7 @@ function update(request, response, next) {
     };
     const update_values = {};
 
-    if(body.role) return next('forbidden');
+    if(!body.token) return next('invalid json');
     if(body.password) update_values.password = body.password;
     if(body.firstName) update_values.firstName = body.firstName;
     if(body.lastName) update_values.lastName = body.lastName;
@@ -125,6 +128,7 @@ function getById(request, response, next) {
 
     db.getUserById(id, (err, doc) => {
         if (err) return next(err);
+        if (!doc) return next('not found');
 
         const user = doc;
         delete user.password;
