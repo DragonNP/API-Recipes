@@ -22,7 +22,7 @@ app.use(errors);
 // connect db and start api
 db.connect(() => {
    app.listen(process.env.PORT || 4000, function () {
-      log.info('api is working on localhost:4000')
+      log.info('api is working...')
    });
    process.on("SIGINT", () => {
       db.close();
