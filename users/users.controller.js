@@ -1,6 +1,7 @@
-const Role = require('./_helpers/role');
-const config = require('config.json');
 const jwt = require('jsonwebtoken');
+const Role = require('./_helpers/role');
+const crypt = require('_helpers/crypt');
+const config = require('config.json');
 const db = require('db');
 
 module.exports = {
@@ -14,8 +15,7 @@ module.exports = {
 function authenticate(request, response, next) {
     const body = request.body;
     const params = {
-        email: body.email,
-        password: body.password
+        email: body.email
     };
 
     if (!body.email ||
@@ -24,21 +24,17 @@ function authenticate(request, response, next) {
 
     db.getUser(params, (err, doc) => {
         if (err) return next(err);
-        if (!doc) return next('email or password invalid');
+        if (!doc) return next('email invalid');
 
-        response.json({ token: doc.token });
+        crypt.compare(body.password, doc.password, function(err, res) {
+            if(!res) return next('password invalid');
+            response.json({ token: doc.token });
+        });
     });
 }
 
 function registration(request, response, next) {
     const body = request.body;
-    const token = jwt.sign(
-        {
-            username: body.username,
-            password: body.password
-        },
-        config.secret);
-
     const params1 = {
         username: body.username
     };
@@ -49,21 +45,19 @@ function registration(request, response, next) {
         username: body.username,
         firstName: '',
         lastName: '',
-        password: body.password,
+        password: '',
         email: body.email,
         role: Role.User,
         favourites: [],
         recipes: [],
-        token: token
+        token: ''
     };
 
-    if(body.firstName)
-        user.firstName = body.firstName;
-    if(body.lastName)
-        user.lastName = body.lastName;
+    if(body.firstName) user.firstName = body.firstName;
+    if(body.lastName) user.lastName = body.lastName;
     if(!body.username ||
-        !body.password ||
-        !body.email)
+       !body.password ||
+       !body.email)
         return next('invalid json');
 
     db.getUser(params1, (err, result) => {
@@ -74,9 +68,24 @@ function registration(request, response, next) {
             if(err) return next(err);
             if (result) return next('email is exist');
 
-            db.addUser(user, (err, result) => {
+            crypt.hash(body.password, function(err, hash) {
                 if(err) return next(err);
-                response.json({ token: result.token });
+
+                const token = jwt.sign(
+                    {
+                        email: body.email,
+                        username: body.username,
+                        password: hash
+                    },
+                    config.secret);
+
+                user.password = hash;
+                user.token = token;
+
+                db.addUser(user, err => {
+                    if(err) return next(err);
+                    response.json({ token: token });
+                });
             });
         });
     });
@@ -97,6 +106,7 @@ function myProfile(request, response, next) {
 
         const user = doc;
         delete user.token;
+        delete user.password;
 
         response.json(user);
     });
@@ -110,15 +120,27 @@ function update(request, response, next) {
     const update_values = {};
 
     if(!body.token) return next('invalid json');
-    if(body.password) update_values.password = body.password;
     if(body.firstName) update_values.firstName = body.firstName;
     if(body.lastName) update_values.lastName = body.lastName;
     if(body.favourites) update_values.favourites = body.favourites;
 
-    db.updateUser(params, update_values, (err, result) => {
-        if(err) return next(err);
-        response.json({ ok: result.ok });
-    })
+    if(body.password) {
+        crypt.hash(body.password, function(err, hash) {
+            if(err) return next(err);
+            update_values.password = hash;
+
+            db.updateUser(params, update_values, (err, result) => {
+                if(err) return next(err);
+                response.json({ ok: result.ok });
+            })
+        });
+    }
+    else {
+        db.updateUser(params, update_values, (err, result) => {
+            if (err) return next(err);
+            response.json({ok: result.ok});
+        })
+    }
 }
 
 function getById(request, response, next) {
