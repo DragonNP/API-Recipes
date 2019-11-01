@@ -8,7 +8,7 @@ const log = require('_helpers/logger');
 const db = require('db');
 
 const app = express();
-log.setLevel('debug');
+log.setLevel('info');
 
 // use bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
