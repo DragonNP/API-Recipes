@@ -33,7 +33,7 @@ module.exports = {
 
 // Connect and close db
 function connect(fn) {
-    log.info('connecting to db...');
+    log.info('db: connecting to db...');
 
     mongoClient.connect()
         .then(client => {
@@ -64,18 +64,18 @@ function close() {
 
 // Users
 function addUser(user, fn) {
-    log.info('called method addUser');
+    log.info('db: called method addUser');
 
     collectionUsers.insertOne(user, fn);
 }
 
 function getUser(params, fn) {
-    log.info('called method getUser');
+    log.info('db: called method getUser');
     collectionUsers.findOne(params, fn);
 }
 
 function getUserById(id, fn) {
-    log.info('called method getUserById');
+    log.info('db: called method getUserById');
     collectionUsers.findOne(
         ObjectID(id),
         fn
@@ -83,12 +83,12 @@ function getUserById(id, fn) {
 }
 
 function getUsers(params, fn) {
-    log.info('called method getUsers');
+    log.info('db: called method getUsers');
     collectionUsers.find(params).toArray(fn);
 }
 
 function updateUser(params, update_values, fn) {
-    log.info('called method updateUser');
+    log.info('db: called method updateUser');
     collectionUsers.findOneAndUpdate(
         params,
         {$set: update_values},
@@ -97,7 +97,7 @@ function updateUser(params, update_values, fn) {
 }
 
 function updateUserById(id, update_values, fn) {
-    log.info('called method updateUserById');
+    log.info('db: called method updateUserById');
     collectionUsers.findOneAndUpdate(
         {_id: ObjectID(id)},
         { $set: update_values},
@@ -106,13 +106,13 @@ function updateUserById(id, update_values, fn) {
 }
 
 function deleteUser(params, fn) {
-    log.info('called method deleteUser');
+    log.info('db: called method deleteUser');
     collectionUsers.deleteOne(params, fn)
 }
 
 // Recipes
 function addRecipe(recipe, fn) {
-    log.info('called method addRecipe');
+    log.info('db: called method addRecipe');
     collectionRecipes.insertOne(recipe, (err, result) => {
         log.debug(`err:${err} ok:${result.result.ok}`);
         fn(err, result.ops[0]);
@@ -120,7 +120,7 @@ function addRecipe(recipe, fn) {
 }
 
 function getRecipeById(id, fn) {
-    log.info('called method getRecipeById');
+    log.info('db: called method getRecipeById');
     collectionRecipes.findOne(
         ObjectID(id),
         fn
@@ -128,12 +128,12 @@ function getRecipeById(id, fn) {
 }
 
 function getRecipes(params, fn) {
-    log.info('called method getRecipes');
+    log.info('db: called method getRecipes');
     collectionRecipes.find(params).toArray(fn);
 }
 
 function updateRecipe(params, update_values, fn) {
-    log.info('called method updateUser');
+    log.info('db: called method updateUser');
     collectionRecipes.findOneAndUpdate(
         params,
         {$set: update_values},
@@ -142,6 +142,6 @@ function updateRecipe(params, update_values, fn) {
 }
 
 function deleteRecipe(params, fn) {
-    log.info('called method deleteRecipe');
+    log.info('db: called method deleteRecipe');
     collectionRecipes.deleteOne(params, fn)
 }

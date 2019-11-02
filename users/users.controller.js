@@ -3,6 +3,7 @@ const Role = require('./_helpers/role');
 const crypt = require('_helpers/crypt');
 const config = require('config.json');
 const db = require('db');
+const log = require('_helpers/logger');
 
 module.exports = {
     authenticate,
@@ -13,6 +14,8 @@ module.exports = {
 };
 
 function authenticate(request, response, next) {
+    log.log('users.controller: called authenticate method');
+
     const body = request.body;
     const params = {
         email: body.email
@@ -34,6 +37,8 @@ function authenticate(request, response, next) {
 }
 
 function registration(request, response, next) {
+    log.log('users.controller: called registration method');
+
     const body = request.body;
     const params1 = {
         username: body.username
@@ -68,7 +73,7 @@ function registration(request, response, next) {
             if(err) return next(err);
             if (result) return next('email is exist');
 
-            crypt.hash(body.password, function(err, hash) {
+            crypt.crypt(body.password, function(err, hash) {
                 if(err) return next(err);
 
                 const token = jwt.sign(
@@ -92,6 +97,8 @@ function registration(request, response, next) {
 }
 
 function myProfile(request, response, next) {
+    log.log('users.controller: called myProfile method');
+
     const body = request.body;
     const token = body.token;
     const params = {
@@ -113,6 +120,8 @@ function myProfile(request, response, next) {
 }
 
 function update(request, response, next) {
+    log.log('users.controller: called update method');
+
     const body = request.body;
     const params = {
         token: body.token
@@ -125,7 +134,7 @@ function update(request, response, next) {
     if(body.favourites) update_values.favourites = body.favourites;
 
     if(body.password) {
-        crypt.hash(body.password, function(err, hash) {
+        crypt.crypt(body.password, function(err, hash) {
             if(err) return next(err);
             update_values.password = hash;
 
@@ -144,6 +153,8 @@ function update(request, response, next) {
 }
 
 function getById(request, response, next) {
+    log.log('users.controller: called getById method');
+
     const id = request.body.id;
 
     if(!id) return next('invalid json');
