@@ -14,7 +14,7 @@ module.exports = {
 };
 
 function authenticate(request, response, next) {
-    log.log('users.controller: called authenticate method');
+    log.info('users.controller: called authenticate method');
 
     const body = request.body;
     const params = {
@@ -37,7 +37,7 @@ function authenticate(request, response, next) {
 }
 
 function registration(request, response, next) {
-    log.log('users.controller: called registration method');
+    log.info('users.controller: called registration method');
 
     const body = request.body;
     const params1 = {
@@ -97,7 +97,7 @@ function registration(request, response, next) {
 }
 
 function myProfile(request, response, next) {
-    log.log('users.controller: called myProfile method');
+    log.info('users.controller: called myProfile method');
 
     const body = request.body;
     const token = body.token;
@@ -120,7 +120,7 @@ function myProfile(request, response, next) {
 }
 
 function update(request, response, next) {
-    log.log('users.controller: called update method');
+    log.info('users.controller: called update method');
 
     const body = request.body;
     const params = {
@@ -153,7 +153,7 @@ function update(request, response, next) {
 }
 
 function getById(request, response, next) {
-    log.log('users.controller: called getById method');
+    log.info('users.controller: called getById method');
 
     const id = request.body.id;
 

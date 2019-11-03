@@ -1,6 +1,7 @@
 const db = require('db');
 const dateFormat = require('dateformat');
 const ObjectID = require('mongodb').ObjectID;
+const log = require('_helpers/logger');
 
 module.exports = {
     add,
@@ -10,8 +11,10 @@ module.exports = {
 };
 
 function add(request, response, next) {
+    log.info('recipes.controller: called add method');
+
     const body = request.body;
-    const date = dateFormat(new Date(), "yyyy-mm-dd h:MM");
+    const date = dateFormat(new Date(), "yyyy-mm-dd");
     const params = {
         token: body.token
     };
@@ -58,6 +61,8 @@ function add(request, response, next) {
 }
 
 function deleteByID(request, response, next) {
+    log.info('recipes.controller: called deleteByID method');
+
     const body = request.body;
     const token = body.token;
     const id = body.id;
@@ -95,6 +100,8 @@ function deleteByID(request, response, next) {
 }
 
 function addFavourites(request, response, next) {
+    log.info('recipes.controller: called addFavourites method');
+
     const body = request.body;
     const token = body.token;
     const recipe_id = body.id;
@@ -126,6 +133,8 @@ function addFavourites(request, response, next) {
 }
 
 function getAllOrById(request, response, next) {
+    log.info('recipes.controller: called getAllOrById method');
+
     if (request.body.id)
         return getById(request, response, next);
     if (request.body.account_id)
@@ -139,6 +148,8 @@ function getAllOrById(request, response, next) {
 
 
 function getAll(request, response, next) {
+    log.info('recipes.controller: called getAll method');
+
     db.getRecipes({}, (err, result) => {
         if(err) return next(err);
         response.json(result)
@@ -146,6 +157,8 @@ function getAll(request, response, next) {
 }
 
 function getById(request, response, next) {
+    log.info('recipes.controller: called getById method');
+
     const body = request.body;
 
     db.getRecipeById(body.id, (err, result) => {
@@ -157,6 +170,8 @@ function getById(request, response, next) {
 }
 
 function getByAccountID(request, response, next) {
+    log.info('recipes.controller: called getByAccountID method');
+
     const body = request.body;
     const params = {
         account_id: ObjectID(body.account_id)
