@@ -5,9 +5,12 @@ const log = require('_helpers/logger');
 
 module.exports = {
     add,
-    deleteByID,
+    deleteById,
     addFavourites,
-    getAllOrById
+    my,
+    all,
+    byId,
+    byAccountId
 };
 
 function add(request, response, next) {
@@ -60,7 +63,7 @@ function add(request, response, next) {
     });
 }
 
-function deleteByID(request, response, next) {
+function deleteById(request, response, next) {
     log.info('recipes.controller: called deleteByID method');
 
     const body = request.body;
@@ -132,23 +135,33 @@ function addFavourites(request, response, next) {
     });
 }
 
-function getAllOrById(request, response, next) {
-    log.info('recipes.controller: called getAllOrById method');
+function my(request, response, next) {
+    log.info('recipes.controller: called myRecipes method');
 
-    if (request.body.id)
-        return getById(request, response, next);
-    if (request.body.account_id)
-        return getByAccountID(request, response, next);
-    if (!request.body.id &&
-        !request.body.account_id)
-        return getAll(request, response, next);
+    const body = request.body;
+    const params = {
+        token: body.token
+    };
+    const params2 = {};
 
-    return next('invalid json');
+    if(!body.token) return next('invalid token');
+
+    db.getUser(params, (err, result) => {
+        if(err) return next(err);
+        if(!result) return next('token not found');
+
+        params2.account_id = result._id;
+
+        db.getRecipes(params2, (err, result) => {
+            if(err) return next(err);
+
+            response.json(result);
+        });
+    });
 }
 
-
-function getAll(request, response, next) {
-    log.info('recipes.controller: called getAll method');
+function all(request, response, next) {
+    log.info('recipes.controller: called all method');
 
     db.getRecipes({}, (err, result) => {
         if(err) return next(err);
@@ -156,30 +169,35 @@ function getAll(request, response, next) {
     });
 }
 
-function getById(request, response, next) {
-    log.info('recipes.controller: called getById method');
+function byId(request, response, next) {
+    log.info('recipes.controller: called byId method');
 
     const body = request.body;
+    const id = body.id;
 
-    db.getRecipeById(body.id, (err, result) => {
-        if(err) return next(err);
-        if(!result) return next('invalid id');
+    if (!body.id) return next('invalid json');
+
+    return db.getRecipeById(id, (err, result) => {
+        if (err) return next(err);
+        if (!result) return next('recipes not found');
 
         response.json(result);
     });
 }
 
-function getByAccountID(request, response, next) {
-    log.info('recipes.controller: called getByAccountID method');
+function byAccountId(request, response, next) {
+    log.info('recipes.controller: called byAccountId method');
 
     const body = request.body;
     const params = {
-        account_id: ObjectID(body.account_id)
+        account_id: ObjectID(body.id)
     };
+
+    if(!body.id) return next('invalid json');
 
     db.getRecipes(params, (err, result) => {
         if(err) return next(err);
-        if(!result) return next('invalid account id');
+        if(!result) return next('recipes not found');
 
         response.json(result);
     });

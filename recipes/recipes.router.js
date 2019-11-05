@@ -8,9 +8,12 @@ router.post('/add', recipesController.add);
 router.post('/addFavourites', recipesController.addFavourites);
 
 // get requests
-router.get('/', recipesController.getAllOrById);
+router.get('/my', recipesController.my);
+router.get('/all', recipesController.all);
+router.get('/byId', recipesController.byId);
+router.get('/byAccountId', recipesController.byAccountId);
 
 // delete request
-router.delete('/', recipesController.deleteByID);
+router.delete('/', recipesController.deleteById);
 
 module.exports = router;
