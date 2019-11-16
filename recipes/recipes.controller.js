@@ -13,20 +13,26 @@ module.exports = {
     byAccountId
 };
 
-function add(request, response, next) {
+async function add(request, response, next) {
     log.info('recipes.controller: called add method');
 
     const body = request.body;
-    const date = dateFormat(new Date(), "yyyy-mm-dd");
+    const date = dateFormat(new Date(), "dd-mm-yyyy");
     const params = {
         token: body.token
     };
 
     if (!body.token ||
         !body.name ||
-        !body.ingredients ||
+        !body.numberIngredients ||
         !body.instruction)
         return next('invalid json');
+
+    let ingredients = [];
+    for (let i = 0; i < body.numberIngredients; i++)
+        ingredients.push([body[`name_${i}`],
+            body[`value_${i}`],
+            body[`unit_${i}`]]);
 
     db.getUser(params, (err, result) => {
         if(err) return next(err);
@@ -35,17 +41,17 @@ function add(request, response, next) {
         const account_id = result._id;
         const recipes = result.recipes;
         const recipe = {
-            path_img: '',
+            img_path: '',
             name: body.name,
             description: '',
-            ingredients: body.ingredients,
+            ingredients: ingredients,
             instruction: body.instruction,
             date: date,
             account_id: account_id,
         };
 
         if (body.description) recipe.description = body.description;
-        if (body.path_img) recipe.path_img = body.path_img;
+        if (body.img_path) recipe.img_path = body.img_path;
 
         db.addRecipe(recipe, (err, result) => {
             if (err) return next(err);
@@ -63,7 +69,7 @@ function add(request, response, next) {
     });
 }
 
-function deleteById(request, response, next) {
+async function deleteById(request, response, next) {
     log.info('recipes.controller: called deleteByID method');
 
     const body = request.body;
@@ -76,8 +82,7 @@ function deleteById(request, response, next) {
         _id: ObjectID(id)
     };
 
-    if(!token ||
-        !id)
+    if(!token || !id)
         return next('invalid json');
 
     db.getUser(params, (err, result) => {
@@ -102,7 +107,7 @@ function deleteById(request, response, next) {
     })
 }
 
-function addFavourites(request, response, next) {
+async function addFavourites(request, response, next) {
     log.info('recipes.controller: called addFavourites method');
 
     const body = request.body;
@@ -135,7 +140,7 @@ function addFavourites(request, response, next) {
     });
 }
 
-function my(request, response, next) {
+async function my(request, response, next) {
     log.info('recipes.controller: called myRecipes method');
 
     const body = request.body;
@@ -160,7 +165,7 @@ function my(request, response, next) {
     });
 }
 
-function all(request, response, next) {
+async function all(request, response, next) {
     log.info('recipes.controller: called all method');
 
     db.getRecipes({}, (err, result) => {
@@ -169,7 +174,7 @@ function all(request, response, next) {
     });
 }
 
-function byId(request, response, next) {
+async function byId(request, response, next) {
     log.info('recipes.controller: called byId method');
 
     const body = request.body;
@@ -185,7 +190,7 @@ function byId(request, response, next) {
     });
 }
 
-function byAccountId(request, response, next) {
+async function byAccountId(request, response, next) {
     log.info('recipes.controller: called byAccountId method');
 
     const body = request.body;

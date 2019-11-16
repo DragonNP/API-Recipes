@@ -10,8 +10,8 @@ router.post('/addFavourites', recipesController.addFavourites);
 // get requests
 router.get('/my', recipesController.my);
 router.get('/all', recipesController.all);
-router.get('/byId', recipesController.byId);
-router.get('/byAccountId', recipesController.byAccountId);
+router.get('/id', recipesController.byId);
+router.get('/accountId', recipesController.byAccountId);
 
 // delete request
 router.delete('/', recipesController.deleteById);
