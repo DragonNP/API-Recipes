@@ -29,7 +29,7 @@ async function add(request, response, next) {
         return next('invalid json');
 
     let ingredients = [];
-    for (let i = 0; i < body.numberIngredients; i++)
+    for (let i = 0; i <= body.numberIngredients; i++)
         ingredients.push([body[`name_${i}`],
             body[`value_${i}`],
             body[`unit_${i}`]]);
