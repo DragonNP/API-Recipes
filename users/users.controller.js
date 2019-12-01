@@ -40,11 +40,8 @@ function registration(request, response, next) {
     log.info('users.controller: called registration method');
 
     const body = request.body;
-    const params1 = {
-        username: body.username
-    };
-    const params2 = {
-        email: body.email
+    const params = {
+        $or: [{username: body.username}, {email: body.email}]
     };
     const user = {
         username: body.username,
@@ -58,39 +55,34 @@ function registration(request, response, next) {
         token: ''
     };
 
-    if(body.firstName) user.firstName = body.firstName;
-    if(body.lastName) user.lastName = body.lastName;
-    if(!body.username ||
-       !body.password ||
-       !body.email)
+    if (body.firstName) user.firstName = body.firstName;
+    if (body.lastName) user.lastName = body.lastName;
+    if (!body.username ||
+        !body.password ||
+        !body.email)
         return next('invalid json');
 
-    db.getUser(params1, (err, result) => {
-        if(err) return next(err);
-        if (result) return next('username is exist');
+    db.getUser(params, (err, result) => {
+        if (err) return next(err);
+        if (result) return next('username or email is exist');
 
-        db.getUser(params2, (err, result) => {
-            if(err) return next(err);
-            if (result) return next('email is exist');
+        crypt.crypt(body.password, function (err, hash) {
+            if (err) return next(err);
 
-            crypt.crypt(body.password, function(err, hash) {
-                if(err) return next(err);
+            const token = jwt.sign(
+                {
+                    email: body.email,
+                    username: body.username,
+                    password: hash
+                },
+                config.secret);
 
-                const token = jwt.sign(
-                    {
-                        email: body.email,
-                        username: body.username,
-                        password: hash
-                    },
-                    config.secret);
+            user.password = hash;
+            user.token = token;
 
-                user.password = hash;
-                user.token = token;
-
-                db.addUser(user, err => {
-                    if(err) return next(err);
-                    response.json({ token: token });
-                });
+            db.addUser(user, err => {
+                if (err) return next(err);
+                response.json({token: token});
             });
         });
     });
