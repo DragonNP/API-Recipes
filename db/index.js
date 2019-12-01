@@ -8,6 +8,7 @@ const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopo
 let dbClient;
 let collectionUsers;
 let collectionRecipes;
+let collectionLang;
 
 module.exports = {
     // Connect and close db
@@ -28,7 +29,12 @@ module.exports = {
     getRecipeById,
     getRecipes,
     updateRecipe,
-    deleteRecipe
+    deleteRecipe,
+
+    // Lang
+    getPackLang,
+    addPackLang,
+    updatePackLang
 };
 
 // Connect and close db
@@ -40,14 +46,17 @@ function connect(fn) {
             const database = client.db('apidb');
             const dbCollectionUsers = database.collection('users');
             const dbCollectionRecipes = database.collection('recipes');
+            const dbCollectionLang = database.collection('lang');
 
             dbClient = client;
             collectionUsers = dbCollectionUsers;
             collectionRecipes = dbCollectionRecipes;
+            collectionLang = dbCollectionLang;
 
             log.debug('dbClient initialized');
             log.debug('collectionUsers initialized');
             log.debug('collectionRecipes initialized');
+            log.debug('dbCollectionLang initialized');
             log.info('connecting is successful');
 
             fn()
@@ -144,4 +153,27 @@ function updateRecipe(params, update_values, fn) {
 function deleteRecipe(params, fn) {
     log.info('db: called method deleteRecipe');
     collectionRecipes.deleteOne(params, fn)
+}
+
+// Language
+function getPackLang(lang, fn) {
+    log.info('db: called method getPackLang');
+    collectionLang.findOne(
+        {lang: lang},
+        fn
+    );
+}
+
+function addPackLang(params, fn) {
+    log.info('db: called method addPackLang');
+    collectionLang.insertOne(params, fn)
+}
+
+function updatePackLang(params, update_values, fn) {
+    log.info('db: called method updatePackLang');
+    collectionLang.findOneAndUpdate(
+        params,
+        {$set: update_values},
+        fn
+    )
 }

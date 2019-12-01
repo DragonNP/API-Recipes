@@ -36,7 +36,7 @@ async function add(request, response, next) {
 
     db.getUser(params, (err, result) => {
         if(err) return next(err);
-        if(!result) return  next('invalid token');
+        if(!result) return next('invalid token');
 
         const account_id = result._id;
         const recipes = result.recipes;
