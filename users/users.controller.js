@@ -13,7 +13,7 @@ module.exports = {
     getById,
 };
 
-function authenticate(request, response, next) {
+async function authenticate(request, response, next) {
     log.info('users.controller: called authenticate method');
 
     const body = request.body;
@@ -36,7 +36,7 @@ function authenticate(request, response, next) {
     });
 }
 
-function registration(request, response, next) {
+async function registration(request, response, next) {
     log.info('users.controller: called registration method');
 
     const body = request.body;
@@ -88,7 +88,7 @@ function registration(request, response, next) {
     });
 }
 
-function myProfile(request, response, next) {
+async function myProfile(request, response, next) {
     log.info('users.controller: called myProfile method');
 
     const body = request.body;
@@ -111,7 +111,7 @@ function myProfile(request, response, next) {
     });
 }
 
-function update(request, response, next) {
+async function update(request, response, next) {
     log.info('users.controller: called update method');
 
     const body = request.body;
@@ -144,7 +144,7 @@ function update(request, response, next) {
     }
 }
 
-function getById(request, response, next) {
+async function getById(request, response, next) {
     log.info('users.controller: called getById method');
 
     const id = request.body.id;

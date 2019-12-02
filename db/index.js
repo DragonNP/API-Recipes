@@ -9,6 +9,7 @@ let dbClient;
 let collectionUsers;
 let collectionRecipes;
 let collectionLang;
+let collectionIngredients;
 
 module.exports = {
     // Connect and close db
@@ -31,6 +32,11 @@ module.exports = {
     updateRecipe,
     deleteRecipe,
 
+    // Ingredients
+    getIngredient,
+    addIngredient,
+    updateIngredient,
+
     // Lang
     getPackLang,
     addPackLang,
@@ -46,17 +52,17 @@ function connect(fn) {
             const database = client.db('apidb');
             const dbCollectionUsers = database.collection('users');
             const dbCollectionRecipes = database.collection('recipes');
+            const dbCollectionIngredients = database.collection('ingredients');
             const dbCollectionLang = database.collection('lang');
 
             dbClient = client;
             collectionUsers = dbCollectionUsers;
             collectionRecipes = dbCollectionRecipes;
+            collectionIngredients = dbCollectionIngredients;
             collectionLang = dbCollectionLang;
 
             log.debug('dbClient initialized');
-            log.debug('collectionUsers initialized');
-            log.debug('collectionRecipes initialized');
-            log.debug('dbCollectionLang initialized');
+            log.debug('collectionUsers, collectionRecipes, collectionIngredients, collectionLang initialized');
             log.info('connecting is successful');
 
             fn()
@@ -154,6 +160,30 @@ function deleteRecipe(params, fn) {
     log.info('db: called method deleteRecipe');
     collectionRecipes.deleteOne(params, fn)
 }
+
+// Ingredients
+function getIngredient(name, fn) {
+    log.info('db: called method getIngredient');
+    collectionIngredients.findOne(
+        {name: name},
+        fn
+    );
+}
+
+function addIngredient(params, fn) {
+    log.info('db: called method addIngredient');
+    collectionIngredients.insertOne(params, fn)
+}
+
+function updateIngredient(params, update_values, fn) {
+    log.info('db: called method updateIngredient');
+    collectionIngredients.findOneAndUpdate(
+        params,
+        {$set: update_values},
+        fn
+    )
+}
+
 
 // Language
 function getPackLang(lang, fn) {
