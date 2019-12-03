@@ -39,6 +39,7 @@ module.exports = {
 
     // Lang
     getPackLang,
+    getPacksLang,
     addPackLang,
     updatePackLang
 };
@@ -81,129 +82,182 @@ function close() {
 function addUser(user, fn) {
     log.info('db: called method addUser');
 
+    if(typeof user !== "object")
+        return fn('typeof var user id not object', undefined);
+
     collectionUsers.insertOne(user, fn);
 }
 
 function getUser(params, fn) {
     log.info('db: called method getUser');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
     collectionUsers.findOne(params, fn);
 }
 
 function getUserById(id, fn) {
     log.info('db: called method getUserById');
-    collectionUsers.findOne(
-        ObjectID(id),
-        fn
-    );
+
+    if(typeof id !== "number")
+        return fn('typeof var id not number', undefined);
+
+    collectionUsers.findOne(ObjectID(id), fn);
 }
 
-function getUsers(params, fn) {
+function getUsers(params, skip, limit, fn) {
     log.info('db: called method getUsers');
-    collectionUsers.find(params).toArray(fn);
+
+    if(typeof skip !== "number" ||
+       typeof limit !== "number")
+        return fn('typeof var skip or limit not number', undefined);
+
+    collectionUsers.find(params).skip(skip).limit(limit).toArray(fn);
 }
 
 function updateUser(params, update_values, fn) {
     log.info('db: called method updateUser');
-    collectionUsers.findOneAndUpdate(
-        params,
-        {$set: update_values},
-        fn
-    )
+
+    if(typeof params !== "object" ||
+        typeof update_values !== 'object')
+        return fn('typeof var params or update_values not object', undefined);
+
+    collectionUsers.findOneAndUpdate(params, {$set: update_values}, fn)
 }
 
 function updateUserById(id, update_values, fn) {
     log.info('db: called method updateUserById');
+
+    if(typeof id !== "number" ||
+        typeof update_values !== 'object')
+        return fn('typeof var id not number or update_values not object', undefined);
+
     collectionUsers.findOneAndUpdate(
-        {_id: ObjectID(id)},
-        { $set: update_values},
-        fn
-    );
+        {_id: ObjectID(id)}, { $set: update_values}, fn);
 }
 
 function deleteUser(params, fn) {
     log.info('db: called method deleteUser');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
     collectionUsers.deleteOne(params, fn)
 }
 
 // Recipes
 function addRecipe(recipe, fn) {
     log.info('db: called method addRecipe');
-    collectionRecipes.insertOne(recipe, (err, result) => {
-        log.debug(`err:${err} ok:${result.result.ok}`);
-        fn(err, result.ops[0]);
-    });
+
+    if(typeof recipe !== "object")
+        return fn('typeof var recipe not object', undefined);
+
+    collectionRecipes.insertOne(recipe, (err, result) => fn(err, result.ops[0]));
 }
 
 function getRecipeById(id, fn) {
     log.info('db: called method getRecipeById');
-    collectionRecipes.findOne(
-        ObjectID(id),
-        fn
-    );
+
+    if(typeof id !== "number")
+        return fn('typeof var id not number', undefined);
+
+    collectionRecipes.findOne(ObjectID(id), fn);
 }
 
-function getRecipes(params, fn) {
+function getRecipes(params, skip, limit, fn) {
     log.info('db: called method getRecipes');
-    collectionRecipes.find(params).toArray(fn);
+
+    if(typeof skip !== "number" ||
+       typeof limit !== "number")
+        return fn('typeof var skip or limit not number', undefined);
+
+    collectionRecipes.find(params).skip(skip).limit(limit).toArray(fn);
 }
 
 function updateRecipe(params, update_values, fn) {
     log.info('db: called method updateUser');
-    collectionRecipes.findOneAndUpdate(
-        params,
-        {$set: update_values},
-        fn
-    )
+
+    if(typeof params !== "object" ||
+        typeof update_values !== 'object')
+        return fn('typeof var params or update_values not object', undefined);
+
+    collectionRecipes.findOneAndUpdate(params, {$set: update_values}, fn);
 }
 
 function deleteRecipe(params, fn) {
     log.info('db: called method deleteRecipe');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
     collectionRecipes.deleteOne(params, fn)
 }
 
 // Ingredients
 function getIngredient(name, fn) {
     log.info('db: called method getIngredient');
-    collectionIngredients.findOne(
-        {name: name},
-        fn
-    );
+
+    if(typeof name !== "string")
+        return fn('typeof var name not string', undefined);
+
+    collectionIngredients.findOne({name: name}, fn);
 }
 
 function addIngredient(params, fn) {
     log.info('db: called method addIngredient');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
     collectionIngredients.insertOne(params, fn)
 }
 
 function updateIngredient(params, update_values, fn) {
     log.info('db: called method updateIngredient');
-    collectionIngredients.findOneAndUpdate(
-        params,
-        {$set: update_values},
-        fn
-    )
+
+    if(typeof params !== "object" ||
+        typeof update_values !== 'object')
+        return fn('typeof var params or update_values not object', undefined);
+
+    collectionIngredients.findOneAndUpdate(params, {$set: update_values}, fn);
 }
 
 
 // Language
 function getPackLang(lang, fn) {
     log.info('db: called method getPackLang');
-    collectionLang.findOne(
-        {lang: lang},
-        fn
-    );
+
+    if(typeof lang !== "string")
+        return fn('typeof var lang not string', undefined);
+
+    collectionLang.findOne({lang: lang}, fn);
+}
+
+function getPacksLang(params, fn) {
+    log.info('db: called method getPacksLang');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
+    collectionLang.findOne(params, fn);
 }
 
 function addPackLang(params, fn) {
     log.info('db: called method addPackLang');
+
+    if(typeof params !== "object")
+        return fn('typeof var params not object', undefined);
+
     collectionLang.insertOne(params, fn)
 }
 
 function updatePackLang(params, update_values, fn) {
     log.info('db: called method updatePackLang');
-    collectionLang.findOneAndUpdate(
-        params,
-        {$set: update_values},
-        fn
-    )
+
+    if(typeof params !== "object" ||
+        typeof update_values !== 'object')
+        return fn('typeof var params or update_values not object', undefined);
+
+    collectionLang.findOneAndUpdate(params, {$set: update_values}, fn);
 }
