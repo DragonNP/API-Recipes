@@ -100,7 +100,7 @@ function getUser(params, fn) {
 function getUserById(id, fn) {
     log.info('db: called method getUserById');
 
-    if(typeof id !== "number")
+    if(typeof id !== "string")
         return fn('typeof var id not number', undefined);
 
     collectionUsers.findOne(ObjectID(id), fn);
@@ -129,9 +129,9 @@ function updateUser(params, update_values, fn) {
 function updateUserById(id, update_values, fn) {
     log.info('db: called method updateUserById');
 
-    if(typeof id !== "number" ||
+    if(typeof id !== "string" ||
         typeof update_values !== 'object')
-        return fn('typeof var id not number or update_values not object', undefined);
+        return fn('typeof var id not string or update_values not object', undefined);
 
     collectionUsers.findOneAndUpdate(
         {_id: ObjectID(id)}, { $set: update_values}, fn);
@@ -159,8 +159,8 @@ function addRecipe(recipe, fn) {
 function getRecipeById(id, fn) {
     log.info('db: called method getRecipeById');
 
-    if(typeof id !== "number")
-        return fn('typeof var id not number', undefined);
+    if(typeof id !== "string" )
+        return fn('typeof var id not string', undefined);
 
     collectionRecipes.findOne(ObjectID(id), fn);
 }
