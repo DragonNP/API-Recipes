@@ -205,7 +205,7 @@ async function accountId(request, response, next) {
     if(!request.body.limit) request.body.limit = 0;
 
     const params = {
-        account_id: ObjectID(body.id)
+        account_id: ObjectID(request.body.id)
     };
     const skip = Number(request.body.skip);
     const limit = Number(request.body.limit);
