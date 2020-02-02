@@ -1,6 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require('mongodb').ObjectID;
-const log = require('_helpers/logger');
+const log = require('../_helpers/logger');
 
 const uri = "mongodb+srv://Recipes-API-User:58pP2X0Lm8RjWxrR@cluster0-sooyn.gcp.mongodb.net/test?retryWrites=true&w=majority";
 const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -46,7 +46,7 @@ module.exports = {
 
 // Connect and close db
 function connect(fn) {
-    log.info('db: connecting to db...');
+    log.debug('db: connecting to db...');
 
     mongoClient.connect()
         .then(client => {
@@ -64,7 +64,7 @@ function connect(fn) {
 
             log.debug('dbClient initialized');
             log.debug('collectionUsers, collectionRecipes, collectionIngredients, collectionLang initialized');
-            log.info('connecting is successful');
+            log.debug('connecting is successful');
 
             fn()
         }).catch(err => log.err(err));
@@ -72,7 +72,7 @@ function connect(fn) {
 
 function close() {
     if(dbClient) {
-        log.info('closing dbClient');
+        log.debug('closing dbClient');
         return dbClient.close();
     }
     log.err('db is not connecting')
@@ -80,7 +80,7 @@ function close() {
 
 // Users
 function addUser(user, fn) {
-    log.info('db: called method addUser');
+    log.debug('db: called method addUser');
 
     if(typeof user !== "object")
         return fn('typeof var user id not object', undefined);
@@ -89,7 +89,7 @@ function addUser(user, fn) {
 }
 
 function getUser(params, fn) {
-    log.info('db: called method getUser');
+    log.debug('db: called method getUser');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -98,7 +98,7 @@ function getUser(params, fn) {
 }
 
 function getUserById(id, fn) {
-    log.info('db: called method getUserById');
+    log.debug('db: called method getUserById');
 
     if(typeof id !== "string")
         return fn('typeof var id not number', undefined);
@@ -107,7 +107,7 @@ function getUserById(id, fn) {
 }
 
 function getUsers(params, skip, limit, fn) {
-    log.info('db: called method getUsers');
+    log.debug('db: called method getUsers');
 
     if(typeof skip !== "number" ||
        typeof limit !== "number")
@@ -117,7 +117,7 @@ function getUsers(params, skip, limit, fn) {
 }
 
 function updateUser(params, update_values, fn) {
-    log.info('db: called method updateUser');
+    log.debug('db: called method updateUser');
 
     if(typeof params !== "object" ||
         typeof update_values !== 'object')
@@ -127,7 +127,7 @@ function updateUser(params, update_values, fn) {
 }
 
 function updateUserById(id, update_values, fn) {
-    log.info('db: called method updateUserById');
+    log.debug('db: called method updateUserById');
 
     if(typeof id !== "string" ||
         typeof update_values !== 'object')
@@ -138,7 +138,7 @@ function updateUserById(id, update_values, fn) {
 }
 
 function deleteUser(params, fn) {
-    log.info('db: called method deleteUser');
+    log.debug('db: called method deleteUser');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -148,7 +148,7 @@ function deleteUser(params, fn) {
 
 // Recipes
 function addRecipe(recipe, fn) {
-    log.info('db: called method addRecipe');
+    log.debug('db: called method addRecipe');
 
     if(typeof recipe !== "object")
         return fn('typeof var recipe not object', undefined);
@@ -157,7 +157,7 @@ function addRecipe(recipe, fn) {
 }
 
 function getRecipeById(id, fn) {
-    log.info('db: called method getRecipeById');
+    log.debug('db: called method getRecipeById');
 
     if(typeof id !== "string" )
         return fn('typeof var id not string', undefined);
@@ -166,7 +166,7 @@ function getRecipeById(id, fn) {
 }
 
 function getRecipes(params, skip, limit, fn) {
-    log.info('db: called method getRecipes');
+    log.debug('db: called method getRecipes');
 
     if(typeof skip !== "number" ||
        typeof limit !== "number")
@@ -176,7 +176,7 @@ function getRecipes(params, skip, limit, fn) {
 }
 
 function updateRecipe(params, update_values, fn) {
-    log.info('db: called method updateUser');
+    log.debug('db: called method updateUser');
 
     if(typeof params !== "object" ||
         typeof update_values !== 'object')
@@ -186,7 +186,7 @@ function updateRecipe(params, update_values, fn) {
 }
 
 function deleteRecipe(params, fn) {
-    log.info('db: called method deleteRecipe');
+    log.debug('db: called method deleteRecipe');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -196,7 +196,7 @@ function deleteRecipe(params, fn) {
 
 // Ingredients
 function getIngredient(name, fn) {
-    log.info('db: called method getIngredient');
+    log.debug('db: called method getIngredient');
 
     if(typeof name !== "string")
         return fn('typeof var name not string', undefined);
@@ -205,7 +205,7 @@ function getIngredient(name, fn) {
 }
 
 function addIngredient(params, fn) {
-    log.info('db: called method addIngredient');
+    log.debug('db: called method addIngredient');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -214,7 +214,7 @@ function addIngredient(params, fn) {
 }
 
 function updateIngredient(params, update_values, fn) {
-    log.info('db: called method updateIngredient');
+    log.debug('db: called method updateIngredient');
 
     if(typeof params !== "object" ||
         typeof update_values !== 'object')
@@ -226,7 +226,7 @@ function updateIngredient(params, update_values, fn) {
 
 // Language
 function getPackLang(lang, fn) {
-    log.info('db: called method getPackLang');
+    log.debug('db: called method getPackLang');
 
     if(typeof lang !== "string")
         return fn('typeof var lang not string', undefined);
@@ -235,7 +235,7 @@ function getPackLang(lang, fn) {
 }
 
 function getPacksLang(params, fn) {
-    log.info('db: called method getPacksLang');
+    log.debug('db: called method getPacksLang');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -244,7 +244,7 @@ function getPacksLang(params, fn) {
 }
 
 function addPackLang(params, fn) {
-    log.info('db: called method addPackLang');
+    log.debug('db: called method addPackLang');
 
     if(typeof params !== "object")
         return fn('typeof var params not object', undefined);
@@ -253,7 +253,7 @@ function addPackLang(params, fn) {
 }
 
 function updatePackLang(params, update_values, fn) {
-    log.info('db: called method updatePackLang');
+    log.debug('db: called method updatePackLang');
 
     if(typeof params !== "object" ||
         typeof update_values !== 'object')

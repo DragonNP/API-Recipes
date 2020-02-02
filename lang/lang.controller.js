@@ -1,5 +1,5 @@
-const db = require('db');
-const log = require('_helpers/logger');
+const db = require('../db');
+const log = require('../_helpers/logger');
 
 module.exports = {
     byLang,
@@ -9,7 +9,7 @@ module.exports = {
 };
 
 async function byLang(request, response, next) {
-    log.info('lang.controller: called get method');
+    log.debug('lang.controller: called get method');
 
     if (!request.body || !request.body.lang)
         return next('invalid json');
@@ -21,7 +21,7 @@ async function byLang(request, response, next) {
 }
 
 async function all(request, response, next) {
-    log.info('lang.controller: called all method');
+    log.debug('lang.controller: called all method');
 
     db.getPacksLang(request.body || {}, (err, result) => {
         if(err) return next(err);
@@ -30,7 +30,7 @@ async function all(request, response, next) {
 }
 
 async function add(request, response, next) {
-    log.info('lang.controller: called add method');
+    log.debug('lang.controller: called add method');
 
     if (!request.body)
         return next('invalid json');
@@ -42,7 +42,7 @@ async function add(request, response, next) {
 }
 
 async function update(request, response, next) {
-    log.info('lang.controller: called update method');
+    log.debug('lang.controller: called update method');
 
     if (!request.body || !request.body.lang)
         return next('invalid json');

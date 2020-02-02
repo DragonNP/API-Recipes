@@ -1,6 +1,6 @@
-const db = require('db');
-const log = require('_helpers/logger');
 const Double = require('mongodb').Double;
+const db = require('../db');
+const log = require('../_helpers/logger');
 
 module.exports = {
     get,
@@ -9,7 +9,7 @@ module.exports = {
 };
 
 async function get(request, response, next) {
-    log.info('ingredients.controller: called getInfo method');
+    log.debug('ingredients.controller: called getInfo method');
     if (!request.body || !request.body.name)
         return next('invalid json');
 
@@ -20,7 +20,7 @@ async function get(request, response, next) {
 }
 
 async function add(request, response, next) {
-    log.info('ingredients.controller: called addInfo method');
+    log.debug('ingredients.controller: called addInfo method');
 
     const body = request.body;
     const params = {
@@ -44,7 +44,7 @@ async function add(request, response, next) {
 }
 
 async function update(request, response, next) {
-    log.info('ingredients.controller: called update method');
+    log.debug('ingredients.controller: called update method');
 
     const params = {
         name: request.name

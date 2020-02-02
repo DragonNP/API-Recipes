@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
-const Role = require('./_helpers/role');
-const crypt = require('_helpers/crypt');
-const config = require('config.json');
-const db = require('db');
-const log = require('_helpers/logger');
+const role = require('../_helpers/role');
+const crypt = require('../_helpers/crypt');
+const config = require('../_helpers/config');
+const db = require('../db');
+const log = require('../_helpers/logger');
 
 module.exports = {
     authenticate,
@@ -14,7 +14,7 @@ module.exports = {
 };
 
 async function authenticate(request, response, next) {
-    log.info('users.controller: called authenticate method');
+    log.debug('users.controller: called authenticate method');
 
     const body = request.body;
     const params = {
@@ -37,7 +37,7 @@ async function authenticate(request, response, next) {
 }
 
 async function registration(request, response, next) {
-    log.info('users.controller: called registration method');
+    log.debug('users.controller: called registration method');
 
     const body = request.body;
     const params = {
@@ -49,7 +49,7 @@ async function registration(request, response, next) {
         lastName: '',
         password: '',
         email: body.email,
-        role: Role.User,
+        role: role.User,
         favourites: [],
         recipes: [],
         token: ''
@@ -89,7 +89,7 @@ async function registration(request, response, next) {
 }
 
 async function myProfile(request, response, next) {
-    log.info('users.controller: called myProfile method');
+    log.debug('users.controller: called myProfile method');
 
     const body = request.body;
     const token = body.token;
@@ -112,7 +112,7 @@ async function myProfile(request, response, next) {
 }
 
 async function update(request, response, next) {
-    log.info('users.controller: called update method');
+    log.debug('users.controller: called update method');
 
     const body = request.body;
     const params = {
@@ -145,7 +145,7 @@ async function update(request, response, next) {
 }
 
 async function getById(request, response, next) {
-    log.info('users.controller: called getById method');
+    log.debug('users.controller: called getById method');
 
     const id = request.body.id;
 

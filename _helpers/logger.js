@@ -1,8 +1,6 @@
-require('colors');
+const chalk = require('chalk');
 
-let isDebug,
-    isInfo,
-    isErr;
+let isDebug, isInfo, isErr;
 
 module.exports = {
     setLevel,
@@ -36,18 +34,26 @@ function setLevel(level) {
 
 function debug(msg) {
     if (!isDebug) return;
-
-    console.log('DEBUG:'.blue, msg);
+    console.log('[' + getTimeNow() + '] ' + chalk.blue('✓') + ' ' + msg);
 }
 
 function info(msg) {
-    if (!isInfo) return '';
-
-    console.log('INFO:'.green, msg);
+    if (!isInfo) return;
+    console.log('[' + getTimeNow() + '] ' + chalk.green('✓') + ' ' + msg);
 }
 
 function err(msg) {
     if (!isErr) return;
+    console.log('[' + getTimeNow() + '] ' + chalk.red('✗') + ' ' + new Error(msg).message);
+}
 
-    console.log('ERR:'.red, new Error(msg).message);
+function getTimeNow() {
+    const date_ob = new Date();
+    const date = ("0" + date_ob.getDate()).slice(-2);
+    const month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    const year = date_ob.getFullYear();
+    const hours = date_ob.getHours();
+    const minutes = date_ob.getMinutes();
+    const seconds = date_ob.getSeconds();
+    return year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
 }

@@ -1,7 +1,7 @@
-const db = require('db');
 const dateFormat = require('dateformat');
 const ObjectID = require('mongodb').ObjectID;
-const log = require('_helpers/logger');
+const db = require('../db');
+const log = require('../_helpers/logger');
 
 module.exports = {
     add,
@@ -9,12 +9,12 @@ module.exports = {
     addFavourites,
     my,
     all,
-    byId,
-    byAccountId
+    id,
+    accountId
 };
 
 async function add(request, response, next) {
-    log.info('recipes.controller: called add method');
+    log.debug('recipes.controller: called add method');
 
     if (!request.body.token ||
         !request.body.name ||
@@ -70,7 +70,7 @@ async function add(request, response, next) {
 }
 
 async function deleteById(request, response, next) {
-    log.info('recipes.controller: called deleteByID method');
+    log.debug('recipes.controller: called deleteByID method');
 
     if(!token || !id)
         return next('invalid json');
@@ -108,7 +108,7 @@ async function deleteById(request, response, next) {
 }
 
 async function addFavourites(request, response, next) {
-    log.info('recipes.controller: called addFavourites method');
+    log.debug('recipes.controller: called addFavourites method');
 
     if (!request.body.token ||
         !request.body.recipe_id)
@@ -140,7 +140,7 @@ async function addFavourites(request, response, next) {
 }
 
 async function my(request, response, next) {
-    log.info('recipes.controller: called myRecipes method');
+    log.debug('recipes.controller: called myRecipes method');
 
     if(!request.body.token) return next('invalid token');
     if(!request.body.skip) request.body.skip = 0;
@@ -167,7 +167,7 @@ async function my(request, response, next) {
 }
 
 async function all(request, response, next) {
-    log.info('recipes.controller: called all method');
+    log.debug('recipes.controller: called all method');
 
     if(!request.body.skip) request.body.skip = 0;
     if(!request.body.limit) request.body.limit = 0;
@@ -181,8 +181,8 @@ async function all(request, response, next) {
     });
 }
 
-async function byId(request, response, next) {
-    log.info('recipes.controller: called byId method');
+async function id(request, response, next) {
+    log.debug('recipes.controller: called byId method');
 
     const body = request.body;
     const id = body.id;
@@ -197,8 +197,8 @@ async function byId(request, response, next) {
     });
 }
 
-async function byAccountId(request, response, next) {
-    log.info('recipes.controller: called byAccountId method');
+async function accountId(request, response, next) {
+    log.debug('recipes.controller: called byAccountId method');
 
     if(!request.body.id) return next('invalid json');
     if(!request.body.skip) request.body.skip = 0;
